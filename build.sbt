@@ -17,7 +17,9 @@ libraryDependencies ++= Seq(
   "org.scala-lang" % "scala-reflect" % scalaVersion.value,
   "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion,
   "com.fasterxml.jackson.module" %% "jackson-module-scala" % jacksonVersion,
-  "org.scalatest" %% "scalatest" % "3.2.11" % Test
+  "org.slf4j" % "slf4j-api" % "1.7.36",
+  "org.scalatest" %% "scalatest" % "3.2.11" % Test,
+  "org.slf4j" % "slf4j-simple" % "1.7.36" % Test
 )
 
 homepage := Some(url("https://github.com/pjfanning/jackson-scala-reflect-extensions"))
