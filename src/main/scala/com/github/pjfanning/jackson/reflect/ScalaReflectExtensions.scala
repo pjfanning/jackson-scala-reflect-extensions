@@ -50,8 +50,10 @@ object ScalaReflectExtensions {
               case _ => {
                 prop.param.flatMap { param =>
                   val paramTypes = param.constructor.getParameterTypes
-                  Option.when(param.index >= 0 && paramTypes.size > param.index) {
-                    paramTypes(param.index)
+                  if (param.index >= 0 && paramTypes.size > param.index) {
+                    Some(paramTypes(param.index))
+                  } else {
+                    None
                   }
                 }
               }
