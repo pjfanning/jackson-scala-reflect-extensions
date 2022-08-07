@@ -4,15 +4,18 @@ import com.fasterxml.jackson.core.{JsonParser, TreeNode}
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.databind.{JavaType, MappingIterator, ObjectMapper, ObjectReader, ObjectWriter}
 import com.fasterxml.jackson.module.scala.JavaTypeable
-import com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospectorModule
+import com.fasterxml.jackson.module.scala.introspect.{BeanIntrospector, PropertyDescriptor, ScalaAnnotationIntrospectorModule}
 import com.fasterxml.jackson.databind.`type`.{ArrayType, CollectionLikeType, ReferenceType}
+import com.fasterxml.jackson.module.scala.util.ClassW
 
 import java.io.{File, InputStream, Reader}
+import java.lang.reflect.Method
 import java.net.URL
 import scala.reflect.ClassTag
 
 object ScalaReflectExtensions {
   def ::(o: JsonMapper) = new Mixin(o)
+
   final class Mixin private[ScalaReflectExtensions](mapper: JsonMapper)
     extends JsonMapper(mapper.rebuild().build()) with ScalaReflectExtensions
 
@@ -21,10 +24,47 @@ object ScalaReflectExtensions {
   }
 
   private def registerInnerTypes(cls: Class[_], registered: Set[Class[_]]): Unit = {
-    if (!registered.contains(cls)) {
+    if (cls != null && !registered.contains(cls) && ClassW(cls).extendsScalaClass) {
       ErasureHelper.erasedOptionalPrimitives(cls).foreach { case (name, valueClass) =>
         ScalaAnnotationIntrospectorModule.registerReferencedValueType(cls, name, valueClass)
       }
+      val beanDesc = BeanIntrospector(cls)
+      val newSet = registered + cls
+      beanDesc.properties.foreach { prop =>
+        classForProperty(prop).foreach { propClass =>
+          registerInnerTypes(propClass, newSet)
+        }
+      }
+    }
+  }
+
+  private def classForProperty(prop: PropertyDescriptor): Option[Class[_]] = {
+    prop.field match {
+      case Some(field) => Some(field.getType)
+      case _ => {
+        classForProperty(prop.beanSetter) match {
+          case Some(cls) => Some(cls)
+          case _ => {
+            classForProperty(prop.setter) match {
+              case Some(cls) => Some(cls)
+              case _ => {
+                prop.param.flatMap { param =>
+                  val paramTypes = param.constructor.getParameterTypes
+                  Option.when(param.index >= 0 && paramTypes.size > param.index) {
+                    paramTypes(param.index)
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  private def classForProperty(method: Option[Method]): Option[Class[_]] = {
+    method.flatMap { m =>
+      m.getParameterTypes.headOption
     }
   }
 }
