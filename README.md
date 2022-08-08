@@ -4,7 +4,7 @@
 # jackson-scala-reflect-extensions
 
 Jackson Scala 2 support that uses [scala-reflect](https://docs.scala-lang.org/overviews/reflection/overview.html)
-to get type info.
+to get type info. The problem that this lib solves in described in this [FAQ entry](https://github.com/FasterXML/jackson-module-scala/wiki/FAQ#deserializing-optionint-seqint-and-other-primitive-challenges).
 
 This lib is designed to be used with [jackson-module-scala](https://github.com/FasterXML/jackson-module-scala). By default,
 jackson-module-scala uses Java reflection to work out the class structure.
