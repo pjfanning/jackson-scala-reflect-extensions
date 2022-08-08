@@ -1,5 +1,5 @@
 ![Build Status](https://github.com/pjfanning/jackson-scala-reflect-extensions/actions/workflows/ci.yml/badge.svg?branch=main)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.pjfanning/jackson-scala-reflect-extensions_3/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.pjfanning/jackson-scala-reflect-extensions_3)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.pjfanning/jackson-scala-reflect-extensions_2.13/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.pjfanning/jackson-scala-reflect-extensions_2.13)
 
 # jackson-scala-reflect-extensions
 
