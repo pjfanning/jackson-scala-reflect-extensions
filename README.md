@@ -35,4 +35,3 @@ mapper2.registerModule(DefaultScalaModule)
 
 val instance = mapper.readValue[MyClass](jsonText)
 ```
-
