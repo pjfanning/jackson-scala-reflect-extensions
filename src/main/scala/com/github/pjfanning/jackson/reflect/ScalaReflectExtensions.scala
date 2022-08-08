@@ -251,6 +251,7 @@ trait ScalaReflectExtensions {
         val clazz = javaType.getRawClass
         if (!registeredClasses.contains(clazz)) {
           ScalaReflectExtensions.registerInnerTypes(clazz)
+          registeredClasses.add(clazz)
         }
       }
     }
