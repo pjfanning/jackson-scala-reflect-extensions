@@ -51,7 +51,6 @@ private[reflect] object ErasureHelper {
         Map.empty[String, Class[_]]
       }
     }
-
   }
 
 }
