@@ -14,10 +14,10 @@ import java.net.URL
 import scala.reflect.ClassTag
 
 object ScalaReflectExtensions {
-  def ::(o: JsonMapper) = new Mixin(o)
+  def ::(o: ObjectMapper) = new Mixin(o)
 
-  final class Mixin private[ScalaReflectExtensions](mapper: JsonMapper)
-    extends JsonMapper(mapper.rebuild().build()) with ScalaReflectExtensions
+  final class Mixin private[ScalaReflectExtensions](mapper: ObjectMapper)
+    extends ObjectMapper(mapper) with ScalaReflectExtensions
 
   def registerInnerTypes(cls: Class[_]): Unit = {
     registerInnerTypes(cls, Set.empty)
