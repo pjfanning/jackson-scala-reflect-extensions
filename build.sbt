@@ -18,8 +18,9 @@ libraryDependencies ++= Seq(
   "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion,
   "com.fasterxml.jackson.module" %% "jackson-module-scala" % jacksonVersion,
   "org.slf4j" % "slf4j-api" % "1.7.36",
-  "org.scalatest" %% "scalatest" % "3.2.11" % Test,
-  "org.slf4j" % "slf4j-simple" % "1.7.36" % Test
+  "org.scalatest" %% "scalatest" % "3.2.13" % Test,
+  "org.slf4j" % "slf4j-simple" % "1.7.36" % Test,
+  "com.fasterxml.jackson.dataformat" % "jackson-dataformat-csv" % jacksonVersion % Test
 )
 
 homepage := Some(url("https://github.com/pjfanning/jackson-scala-reflect-extensions"))
