@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.{JavaType, MappingIterator, ObjectMapper, 
 import com.fasterxml.jackson.module.scala.JavaTypeable
 import com.fasterxml.jackson.module.scala.introspect.{BeanIntrospector, PropertyDescriptor, ScalaAnnotationIntrospectorModule}
 import com.fasterxml.jackson.databind.`type`.{ArrayType, CollectionLikeType, ReferenceType}
+import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.module.scala.util.ClassW
 
 import java.io.{File, InputStream, Reader}
@@ -13,9 +14,13 @@ import java.net.URL
 import scala.reflect.ClassTag
 
 object ScalaReflectExtensions {
-  def ::(o: ObjectMapper) = new Mixin(o)
+  def ::(o: JsonMapper): JsonMapper with ScalaReflectExtensions = new JsonMapperMixin(o)
+  def ::(o: ObjectMapper): ObjectMapper with ScalaReflectExtensions = new ObjectMapperMixin(o)
 
-  final class Mixin private[ScalaReflectExtensions](mapper: ObjectMapper)
+  final class JsonMapperMixin private[ScalaReflectExtensions](mapper: JsonMapper)
+    extends JsonMapper(mapper) with ScalaReflectExtensions
+
+  final class ObjectMapperMixin private[ScalaReflectExtensions](mapper: ObjectMapper)
     extends ObjectMapper(mapper) with ScalaReflectExtensions
 
   def registerInnerTypes(cls: Class[_]): Unit = {
