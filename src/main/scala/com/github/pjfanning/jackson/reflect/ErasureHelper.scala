@@ -39,7 +39,13 @@ private[reflect] object ErasureHelper {
             None
           }
         }
-        maybeClass.map(prop.name.toString.trim -> _)
+        maybeClass.flatMap { innerClass =>
+          if (innerClass.isPrimitive) {
+            Some(prop.name.toString.trim -> innerClass)
+          } else {
+            None
+          }
+        }
       }.toMap
     } catch {
       case NonFatal(t) => {
