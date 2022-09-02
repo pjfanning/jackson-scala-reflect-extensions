@@ -62,7 +62,7 @@ class ScalaReflectExtensionsExtrasTest extends AnyFlatSpec with Matchers with Be
     useSeqLong(v1.wrappedLongs.longs) shouldEqual w1.wrappedLongs.longs.sum
   }
 
-  it should "deserialize WrappedSeqOptionLong" in {
+  it should "deserialize WrappedSeqOptionLong" ignore {
     val mapper = newMapperWithScalaReflectExtensions
     val w1 = WrappedSeqOptionLong("myText", SeqOptionLong(Seq(Some(100L), Some(100000000000000L), None)))
     val t1 = mapper.writeValueAsString(w1)
