@@ -11,12 +11,12 @@ ThisBuild / crossScalaVersions := Seq("2.11.12", "2.12.15", "2.13.8")
 val jacksonVersion = "2.13.3"
 val scalaReflectionVersion = "1.1.4"
 
-//resolvers ++= Resolver.sonatypeOssRepos("snapshots")
+resolvers ++= Resolver.sonatypeOssRepos("snapshots")
 
 libraryDependencies ++= Seq(
   "org.scala-lang" % "scala-reflect" % scalaVersion.value,
   "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion,
-  "com.fasterxml.jackson.module" %% "jackson-module-scala" % jacksonVersion,
+  "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.13.3+27-8e264e75-SNAPSHOT",
   "org.slf4j" % "slf4j-api" % "1.7.36",
   "org.scalatest" %% "scalatest" % "3.2.13" % Test,
   "org.slf4j" % "slf4j-simple" % "1.7.36" % Test,
