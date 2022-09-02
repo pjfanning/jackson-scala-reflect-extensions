@@ -39,13 +39,14 @@ private[reflect] object ErasureHelper {
             None
           }
         }
-        maybeClass.flatMap { innerClass =>
+        val mapping: Option[(String, Class[_])] = maybeClass.flatMap { innerClass =>
           if (innerClass.isPrimitive) {
             Some(prop.name.toString.trim -> innerClass)
           } else {
             None
           }
         }
+        mapping
       }.toMap
     } catch {
       case NonFatal(t) => {
