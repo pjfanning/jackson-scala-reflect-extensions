@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.databind.{DatabindException, ObjectMapper}
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.fasterxml.jackson.module.scala.introspect.ScalaAnnotationIntrospectorModule
+import org.scalatest.BeforeAndAfterEach
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
@@ -58,12 +59,20 @@ object ScalaReflectExtensionsTest {
 }
 
 //basically a copy of ClassTagExtensionsTest from jackson-module-scala - to check for compatibility
-class ScalaReflectExtensionsTest extends AnyFlatSpec with Matchers {
+class ScalaReflectExtensionsTest extends AnyFlatSpec with Matchers with BeforeAndAfterEach {
 
   import ScalaReflectExtensionsTest._
 
   def module = DefaultScalaModule
   val mapper = newMapperWithScalaReflectExtensions
+
+  override def beforeEach(): Unit = {
+    ScalaAnnotationIntrospectorModule.clearRegisteredReferencedTypes()
+  }
+
+  override def afterEach(): Unit = {
+    ScalaAnnotationIntrospectorModule.clearRegisteredReferencedTypes()
+  }
 
   "An ObjectMapper with the ScalaReflectExtensions mixin" should "read value from tree node" in {
     val treeNode = mapper.readTree(genericJson).asInstanceOf[TreeNode]
