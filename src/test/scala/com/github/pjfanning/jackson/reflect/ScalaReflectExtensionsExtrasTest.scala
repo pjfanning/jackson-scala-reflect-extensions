@@ -23,6 +23,15 @@ class ScalaReflectExtensionsExtrasTest extends AnyFlatSpec with Matchers {
     useOptionLong(v1.wrappedLong.valueLong) shouldBe 302L
   }
 
+  it should "deserialize WrappedOptionOptionVarLong" in {
+    val mapper = newMapperWithScalaReflectExtensions
+    val v1 = mapper.readValue[WrappedOptionOptionVarLong]("""{"text":"myText","wrappedLong":{"valueLong":151}}""")
+    v1 shouldBe WrappedOptionOptionVarLong("myText", Some(OptionVarLong(Some(151L))))
+    v1.wrappedLong shouldBe defined
+    v1.wrappedLong.get.valueLong.get shouldBe 151L
+    useOptionLong(v1.wrappedLong.get.valueLong) shouldBe 302L
+  }
+
   it should "deserialize WrappedSeqLong" in {
     val mapper = newMapperWithScalaReflectExtensions
     val w1 = WrappedSeqLong("myText", SeqLong(Seq(100L, 100000000000000L)))
