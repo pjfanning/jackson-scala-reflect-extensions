@@ -276,6 +276,16 @@ class ScalaReflectExtensionsTest extends AnyFlatSpec with Matchers {
     result shouldEqual 11
   }
 
+  it should "deserialize id in nested as Long" in {
+    val result = mapper.readValue[ParentWithNested]("""{"nested":{ "id": 8 }}""")
+    result.nested.id.get.isInstanceOf[Long] should be(true)
+  }
+
+  it should "deserialize id in nested option as Long" in {
+    val result = mapper.readValue[ParentWithNestedOption]("""{"nested": { "id": 8 }}""")
+    result.nested.get.id.get.isInstanceOf[Long] should be(true)
+  }
+
   it should "deserialize WrappedOptionLong" in {
     ScalaAnnotationIntrospectorModule.registerReferencedValueType(classOf[OptionLong], "valueLong", classOf[Long])
     val v1 = mapper.readValue[WrappedOptionLong]("""{"text":"myText","wrappedLong":{"valueLong":151}}""")

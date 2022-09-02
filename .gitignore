@@ -1,2 +1,4 @@
 
 .bsp/sbt.json
+target
+.idea
