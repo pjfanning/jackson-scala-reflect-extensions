@@ -25,7 +25,7 @@ class ScalaReflectExtensionsCsvTest extends AnyFlatSpec with Matchers with Befor
     ScalaAnnotationIntrospectorModule.clearRegisteredReferencedTypes()
   }
 
-  "A CsvMapper with ScalaReflectExtensions mixin" should "deserialize WrappedSeqLong" ignore {
+  "A CsvMapper with ScalaReflectExtensions mixin" should "deserialize WrappedSeqLong" in {
     val csvMapper = newCsvMapperWithScalaReflectExtensions
     val javaType = csvMapper.constructType[OptionLong]
     val schema = csvMapper.schemaFor(javaType).withHeader()
