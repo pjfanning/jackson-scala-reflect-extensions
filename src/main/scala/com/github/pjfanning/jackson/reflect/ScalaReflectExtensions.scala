@@ -14,6 +14,9 @@ import java.net.URL
 import scala.reflect.ClassTag
 
 object ScalaReflectExtensions {
+  private val OptionClass = classOf[Option[_]]
+  private val IterableClass = classOf[Iterable[_]]
+
   def ::(o: JsonMapper): JsonMapper with ScalaReflectExtensions = new JsonMapperMixin(o)
   def ::(o: ObjectMapper): ObjectMapper with ScalaReflectExtensions = new ObjectMapperMixin(o)
 
@@ -36,7 +39,14 @@ object ScalaReflectExtensions {
       val newSet = registered + cls
       beanDesc.properties.foreach { prop =>
         classForProperty(prop).foreach { propClass =>
-          registerInnerTypes(propClass, newSet)
+          if (propClass.isAssignableFrom(OptionClass) || propClass.isAssignableFrom(IterableClass)) {
+            ErasureHelper.getParamReferenceType(cls, prop.name) match {
+              case Some(refClass) => registerInnerTypes(refClass, newSet)
+              case _ =>
+            }
+          } else {
+            registerInnerTypes(propClass, newSet)
+          }
         }
       }
     }
