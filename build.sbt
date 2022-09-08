@@ -23,6 +23,14 @@ libraryDependencies ++= Seq(
   "com.fasterxml.jackson.dataformat" % "jackson-dataformat-csv" % jacksonVersion % Test
 )
 
+// build.properties
+Compile / resourceGenerators += Def.task {
+  val file = (Compile / resourceManaged).value / "com" / "github" / "pjfanning" / "jackson" / "reflect" / "build.properties"
+  val contents = "version=%s\ngroupId=%s\nartifactId=%s\n".format(version.value, organization.value, name.value)
+  IO.write(file, contents)
+  Seq(file)
+}.taskValue
+
 homepage := Some(url("https://github.com/pjfanning/jackson-scala-reflect-extensions"))
 
 licenses := Seq("APL2" -> url("https://www.apache.org/licenses/LICENSE-2.0.txt"))
