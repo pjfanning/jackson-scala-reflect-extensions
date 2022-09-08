@@ -18,9 +18,9 @@ class ScalaReflectAnnotationIntrospector extends JacksonAnnotationIntrospector {
   override def findSubtypes(a: Annotated): util.List[NamedType] = {
     try {
       val mirror = ru.runtimeMirror(Thread.currentThread().getContextClassLoader)
-      val moduleSymbol = mirror.moduleSymbol(a.getRawType)
-      lazy val symbol = companionOrSelf(moduleSymbol)
-      if (moduleSymbol.isJava) {
+      val classSymbol = mirror.classSymbol(a.getRawType)
+      lazy val symbol = companionOrSelf(classSymbol)
+      if (classSymbol.isJava) {
         None.orNull
       } else if (symbol.isClass) {
         val clazzes = symbol.asClass.knownDirectSubclasses
@@ -29,12 +29,6 @@ class ScalaReflectAnnotationIntrospector extends JacksonAnnotationIntrospector {
           .flatMap(s => if (s.isClass) Some(s.asClass) else None)
           .map(c => mirror.runtimeClass(c).getName)
         clazzes.map(cn => new NamedType(Class.forName(cn, true, Thread.currentThread().getContextClassLoader))).asJava
-      } else if (moduleSymbol.isType) {
-        moduleSymbol.asType.asClass.knownDirectSubclasses
-          .map(_.asClass.getClass)
-          .map(new NamedType(_))
-          .toSeq
-          .asJava
       } else {
         None.orNull
       }
