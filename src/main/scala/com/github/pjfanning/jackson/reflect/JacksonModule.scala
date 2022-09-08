@@ -1,14 +1,19 @@
 package com.github.pjfanning.jackson.reflect
 
+import java.util.Properties
+
 import com.fasterxml.jackson.core.Version
 import com.fasterxml.jackson.core.util.VersionUtil
-import com.fasterxml.jackson.module.scala.JacksonModule
+import com.fasterxml.jackson.databind.Module.SetupContext
+import com.fasterxml.jackson.databind.`type`.TypeModifier
+import com.fasterxml.jackson.databind.deser.Deserializers
+import com.fasterxml.jackson.databind.ser.{BeanSerializerModifier, Serializers}
+import com.fasterxml.jackson.databind.Module
 
-import java.util.Properties
-import scala.collection.mutable
 import scala.collection.JavaConverters._
+import scala.collection.mutable
 
-private[reflect] object JacksonModule {
+object JacksonModule {
   private val cls = classOf[JacksonModule]
   private val buildPropsFilename = cls.getPackage.getName.replace('.','/') + "/build.properties"
   lazy val buildProps: mutable.Map[String, String] = {
@@ -24,4 +29,23 @@ private[reflect] object JacksonModule {
     val version = buildProps("version")
     VersionUtil.parseVersion(version, groupId, artifactId)
   }
+}
+
+trait JacksonModule extends Module {
+
+  private val initializers = Seq.newBuilder[SetupContext => Unit]
+
+  def getModuleName = "JacksonModule"
+
+  def version = JacksonModule.version
+
+  def setupModule(context: SetupContext): Unit = {
+    initializers.result().foreach(_ apply context)
+  }
+
+  protected def +=(init: SetupContext => Unit): this.type = { initializers += init; this }
+  protected def +=(ser: Serializers): this.type = this += (_ addSerializers ser)
+  protected def +=(deser: Deserializers): this.type = this += (_ addDeserializers deser)
+  protected def +=(typeMod: TypeModifier): this.type = this += (_ addTypeModifier typeMod)
+  protected def +=(beanSerMod: BeanSerializerModifier): this.type = this += (_ addBeanSerializerModifier beanSerMod)
 }

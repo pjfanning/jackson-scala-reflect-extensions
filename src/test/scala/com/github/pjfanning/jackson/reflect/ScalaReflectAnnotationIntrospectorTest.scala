@@ -9,7 +9,7 @@ import org.scalatest.matchers.should.Matchers
 import scala.collection.JavaConverters._
 
 class ScalaReflectAnnotationIntrospectorTest extends AnyFlatSpec with Matchers {
-  "ScalaReflectAnnotationIntrospectorTest" should "find sub types for unannotated.Color" in {
+  "ScalaReflectAnnotationIntrospector" should "find sub types for unannotated.Color" in {
     val introspector = new ScalaReflectAnnotationIntrospector
     val mapper = JsonMapper.builder().build()
     val colorType = mapper.constructType(classOf[annotated.Color])
