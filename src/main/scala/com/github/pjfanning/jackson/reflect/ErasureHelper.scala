@@ -65,7 +65,7 @@ private[reflect] object ErasureHelper {
   }
 
   private def getReflectProps(mirror: universe.Mirror, cls: Class[_]): Iterable[universe.Symbol] = {
-    val moduleSymbol = mirror.moduleSymbol(Class.forName(cls.getName, true, Thread.currentThread.getContextClassLoader))
+    val moduleSymbol = mirror.moduleSymbol(cls)
     val ConstructorName = "apply"
     val companion: universe.Symbol = moduleSymbol.typeSignature.member(universe.TermName(ConstructorName))
     Try(companion.asTerm.alternatives.head.asMethod.paramLists.flatten).getOrElse {
