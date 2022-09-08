@@ -40,7 +40,7 @@ class ScalaReflectAnnotationIntrospector extends JacksonAnnotationIntrospector {
       }
     } catch {
       case NonFatal(t) => {
-        logger.warn("Failed to findSubtypes in {}", a.getRawType, t)
+        logger.warn(s"Failed to findSubtypes in ${a.getRawType}", t)
         None.orNull
       }
     }
