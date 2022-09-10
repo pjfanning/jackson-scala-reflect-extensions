@@ -30,6 +30,19 @@ class ScalaReflectAnnotationIntrospectorModuleTest extends AnyFlatSpec with Matc
     car2.make shouldEqual car.make
   }
 
+  it should "deserialize Nested.Car with Nested.Color" in {
+    val mapper = JsonMapper.builder()
+      .addModule(DefaultScalaModule)
+      .addModule(ScalaObjectDeserializerModule) //this non-default module prevents duplicate scala objects being created
+      .addModule(ScalaReflectAnnotationIntrospectorModule)
+      .build()
+    val car = Nested.Car("Samand", Nested.Red)
+    val json = mapper.writeValueAsString(car)
+    val car2 = mapper.readValue(json, classOf[Nested.Car])
+    car2.color shouldEqual car.color
+    car2.make shouldEqual car.make
+  }
+
   it should "deserialize PetOwner with annotated.Animal" in {
     val mapper = JsonMapper.builder()
       .addModule(DefaultScalaModule)

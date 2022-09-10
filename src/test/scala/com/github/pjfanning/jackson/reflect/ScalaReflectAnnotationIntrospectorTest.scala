@@ -34,6 +34,19 @@ class ScalaReflectAnnotationIntrospectorTest extends AnyFlatSpec with Matchers {
     subtypes(2) shouldEqual annotated.Red.getClass
   }
 
+  it should "find sub types for NestedObject.Color" in {
+    val introspector = new ScalaReflectAnnotationIntrospector
+    val mapper = JsonMapper.builder().build()
+    val colorType = mapper.constructType(classOf[Nested.Color])
+    val annotatedColor = AnnotatedClassResolver.resolve(
+      mapper.getDeserializationConfig, colorType, mapper.getDeserializationConfig)
+    val subtypes = introspector.findSubtypes(annotatedColor).asScala.toSeq.map(_.getType)
+    subtypes should have size 3
+    subtypes(0) shouldEqual Nested.Blue.getClass
+    subtypes(1) shouldEqual Nested.Green.getClass
+    subtypes(2) shouldEqual Nested.Red.getClass
+  }
+
   it should "find sub types for annotated.Animal" in {
     val introspector = new ScalaReflectAnnotationIntrospector
     val mapper = JsonMapper.builder().build()
