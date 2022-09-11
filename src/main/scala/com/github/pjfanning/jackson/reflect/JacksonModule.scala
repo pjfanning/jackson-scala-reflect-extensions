@@ -23,12 +23,14 @@ object JacksonModule {
 
     props.asScala
   }
-  lazy val version: Version = {
+  private lazy val versionValue: Version = {
     val groupId = buildProps("groupId")
     val artifactId = buildProps("artifactId")
     val version = buildProps("version")
     VersionUtil.parseVersion(version, groupId, artifactId)
   }
+
+  def version(): Version = versionValue
 }
 
 trait JacksonModule extends Module {
