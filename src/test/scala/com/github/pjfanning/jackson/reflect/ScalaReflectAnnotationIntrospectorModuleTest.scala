@@ -56,4 +56,8 @@ class ScalaReflectAnnotationIntrospectorModuleTest extends AnyFlatSpec with Matc
     petOwner2.pet.animalType shouldEqual petOwner.pet.animalType
     petOwner2.pet.name shouldEqual petOwner.pet.name
   }
+
+  it should "return version" in {
+    ScalaReflectAnnotationIntrospectorModule.version() shouldEqual JacksonModule.version
+  }
 }

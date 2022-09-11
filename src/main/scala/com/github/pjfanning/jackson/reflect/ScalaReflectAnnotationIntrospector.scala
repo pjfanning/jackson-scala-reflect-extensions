@@ -13,7 +13,7 @@ import scala.util.control.NonFatal
 class ScalaReflectAnnotationIntrospector extends JacksonAnnotationIntrospector {
   private val logger = LoggerFactory.getLogger(classOf[ScalaReflectAnnotationIntrospector])
 
-  override def version(): Version = JacksonModule.version()
+  override def version(): Version = JacksonModule.version
 
   override def findSubtypes(a: Annotated): util.List[NamedType] = {
     try {

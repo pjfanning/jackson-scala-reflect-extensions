@@ -23,14 +23,12 @@ object JacksonModule {
 
     props.asScala
   }
-  private lazy val versionValue: Version = {
+  lazy val version: Version = {
     val groupId = buildProps("groupId")
     val artifactId = buildProps("artifactId")
     val version = buildProps("version")
     VersionUtil.parseVersion(version, groupId, artifactId)
   }
-
-  def version(): Version = versionValue
 }
 
 trait JacksonModule extends Module {
@@ -39,7 +37,7 @@ trait JacksonModule extends Module {
 
   def getModuleName = "JacksonModule"
 
-  def version = JacksonModule.version
+  override def version(): Version = JacksonModule.version
 
   def setupModule(context: SetupContext): Unit = {
     initializers.result().foreach(_ apply context)
