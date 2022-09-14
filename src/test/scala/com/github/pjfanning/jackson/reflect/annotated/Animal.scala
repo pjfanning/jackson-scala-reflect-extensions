@@ -3,17 +3,12 @@ package com.github.pjfanning.jackson.reflect.annotated
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "class")
-sealed abstract class Animal {
+sealed abstract class Animal(val animalType: String) {
   val name: String
-  val animalType: String = "Animal"
 }
 
-class Dog(val name: String) extends Animal {
-  override val animalType: String = "Dog"
-}
+class Dog(val name: String) extends Animal("Dog")
 
-class Cat(val name: String) extends Animal {
-  override val animalType: String = "Cat"
-}
+class Cat(val name: String) extends Animal("Cat")
 
 case class PetOwner(owner: String, pet: Animal)
