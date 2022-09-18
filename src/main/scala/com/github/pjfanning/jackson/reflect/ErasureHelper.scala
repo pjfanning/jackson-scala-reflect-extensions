@@ -69,7 +69,7 @@ private[reflect] object ErasureHelper {
     val ConstructorName = "apply"
     val companion: universe.Symbol = moduleSymbol.typeSignature.member(universe.TermName(ConstructorName))
     Try(companion.asTerm.alternatives.head.asMethod.paramLists.flatten).getOrElse {
-      val sym = mirror.staticClass(cls.getName)
+      val sym = mirror.classSymbol(cls)
       sym.selfType.members
         .filterNot(_.isMethod)
         .filterNot(_.isClass)
