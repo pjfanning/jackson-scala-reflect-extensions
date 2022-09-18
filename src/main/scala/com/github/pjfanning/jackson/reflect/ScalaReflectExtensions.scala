@@ -1,11 +1,11 @@
 package com.github.pjfanning.jackson.reflect
 
 import com.fasterxml.jackson.core.{JsonParser, TreeNode}
-import com.fasterxml.jackson.databind.{JavaType, MappingIterator, ObjectMapper, ObjectReader, ObjectWriter}
-import com.fasterxml.jackson.module.scala.JavaTypeable
-import com.fasterxml.jackson.module.scala.introspect.{BeanIntrospector, PropertyDescriptor, ScalaAnnotationIntrospectorModule}
 import com.fasterxml.jackson.databind.`type`.{ArrayType, CollectionLikeType, ReferenceType}
 import com.fasterxml.jackson.databind.json.JsonMapper
+import com.fasterxml.jackson.databind._
+import com.fasterxml.jackson.module.scala.JavaTypeable
+import com.fasterxml.jackson.module.scala.introspect.{BeanIntrospector, PropertyDescriptor, ScalaAnnotationIntrospectorModule}
 import com.fasterxml.jackson.module.scala.util.ClassW
 
 import java.io.{File, InputStream, Reader}

@@ -1,15 +1,14 @@
 package com.github.pjfanning.jackson.reflect
 
-import java.util.Properties
-
 import com.fasterxml.jackson.core.Version
 import com.fasterxml.jackson.core.util.VersionUtil
+import com.fasterxml.jackson.databind.Module
 import com.fasterxml.jackson.databind.Module.SetupContext
 import com.fasterxml.jackson.databind.`type`.TypeModifier
 import com.fasterxml.jackson.databind.deser.Deserializers
 import com.fasterxml.jackson.databind.ser.{BeanSerializerModifier, Serializers}
-import com.fasterxml.jackson.databind.Module
 
+import java.util.Properties
 import scala.collection.JavaConverters._
 import scala.collection.mutable
 

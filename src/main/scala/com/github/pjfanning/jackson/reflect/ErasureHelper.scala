@@ -16,7 +16,7 @@ private[reflect] object ErasureHelper {
 
   def erasedOptionalPrimitives(cls: Class[_]): Map[String, Class[_]] = {
     try {
-      val mirror = universe.runtimeMirror(cls.getClassLoader)
+      val mirror = universe.runtimeMirror(Thread.currentThread().getContextClassLoader)
       val properties = getReflectProps(mirror, cls)
 
       properties.flatMap { prop =>
@@ -45,7 +45,7 @@ private[reflect] object ErasureHelper {
 
   def getParamReferenceType(cls: Class[_], propertyName: String): Option[Class[_]] = {
     try {
-      val mirror = universe.runtimeMirror(cls.getClassLoader)
+      val mirror = universe.runtimeMirror(Thread.currentThread().getContextClassLoader)
       val properties = getReflectProps(mirror, cls)
       val propOpt = properties.find { prop: universe.Symbol =>
         prop.name.toString.trim == propertyName
@@ -65,12 +65,11 @@ private[reflect] object ErasureHelper {
   }
 
   private def getReflectProps(mirror: universe.Mirror, cls: Class[_]): Iterable[universe.Symbol] = {
-    val moduleSymbol = mirror.moduleSymbol(cls)
+    val classSymbol = mirror.classSymbol(cls)
     val ConstructorName = "apply"
-    val companion: universe.Symbol = moduleSymbol.typeSignature.member(universe.TermName(ConstructorName))
+    val companion: universe.Symbol = classSymbol.typeSignature.member(universe.TermName(ConstructorName))
     Try(companion.asTerm.alternatives.head.asMethod.paramLists.flatten).getOrElse {
-      val sym = mirror.classSymbol(cls)
-      sym.selfType.members
+      classSymbol.selfType.members
         .filterNot(_.isMethod)
         .filterNot(_.isClass)
     }
