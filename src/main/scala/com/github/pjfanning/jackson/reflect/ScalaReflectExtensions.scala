@@ -86,7 +86,7 @@ object ScalaReflectExtensions {
 
   private def isScalaClass(cls: Class[_]): Boolean = {
     val classW = ClassW(cls)
-    classW.extendsScalaClass || (!cls.getName.startsWith("scala.") && classW.hasSignature)
+    classW.extendsScalaClass(false) || (!cls.getName.startsWith("scala.") && classW.hasSignature)
   }
 }
 
