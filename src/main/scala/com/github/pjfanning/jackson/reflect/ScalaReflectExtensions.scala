@@ -31,7 +31,7 @@ object ScalaReflectExtensions {
   }
 
   private def registerInnerTypes(cls: Class[_], registered: Set[Class[_]]): Unit = {
-    if (cls != null && !registered.contains(cls) && ClassW(cls).extendsScalaClass) {
+    if (cls != null && !registered.contains(cls) && isScalaClass(cls)) {
       ErasureHelper.erasedOptionalPrimitives(cls).foreach { case (name, valueClass) =>
         ScalaAnnotationIntrospectorModule.registerReferencedValueType(cls, name, valueClass)
       }
@@ -82,6 +82,11 @@ object ScalaReflectExtensions {
     method.flatMap { m =>
       m.getParameterTypes.headOption
     }
+  }
+
+  private def isScalaClass(cls: Class[_]): Boolean = {
+    val classW = ClassW(cls)
+    classW.extendsScalaClass || (!cls.getName.startsWith("scala.") && classW.hasSignature)
   }
 }
 
