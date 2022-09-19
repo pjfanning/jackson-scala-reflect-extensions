@@ -23,12 +23,12 @@ class ScalaReflectAnnotationIntrospector extends JacksonAnnotationIntrospector {
       if (classSymbol.isJava) {
         None.orNull
       } else if (symbol.isClass) {
-        val clazzes = symbol.asClass.knownDirectSubclasses
+        val classes = symbol.asClass.knownDirectSubclasses
           .toSeq
           .sortBy(_.info.toString)
           .flatMap(s => if (s.isClass) Some(s.asClass) else None)
-          .map(c => mirror.runtimeClass(c).getName)
-        clazzes.map(cn => new NamedType(Class.forName(cn, true, Thread.currentThread().getContextClassLoader))).asJava
+          .map(c => mirror.runtimeClass(c))
+        classes.map(c => new NamedType(c)).asJava
       } else {
         None.orNull
       }
