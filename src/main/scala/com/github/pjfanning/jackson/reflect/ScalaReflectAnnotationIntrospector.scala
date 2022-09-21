@@ -37,6 +37,10 @@ class ScalaReflectAnnotationIntrospector extends JacksonAnnotationIntrospector {
         logger.warn(s"Failed to findSubtypes in ${a.getRawType}: $t")
         None.orNull
       }
+      case error: NoClassDefFoundError => {
+        logger.warn(s"Failed to findSubtypes in ${a.getRawType}: $error")
+        None.orNull
+      }
     }
   }
 

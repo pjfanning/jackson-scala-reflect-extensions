@@ -32,12 +32,11 @@ private[reflect] object ErasureHelper {
       }.toMap
     } catch {
       case NonFatal(t) => {
-        if (logger.isDebugEnabled) {
-          //use this form because of Scala 2.11 & 2.12 compile issue
-          logger.debug(s"Unable to get type info ${Option(cls.getName).getOrElse("null")}", t)
-        } else {
-          logger.info("Unable to get type info {}", Option(cls.getName).getOrElse("null"))
-        }
+        logReflectIssue(cls, t)
+        Map.empty[String, Class[_]]
+      }
+      case error: NoClassDefFoundError => {
+        logReflectIssue(cls, error)
         Map.empty[String, Class[_]]
       }
     }
@@ -53,12 +52,11 @@ private[reflect] object ErasureHelper {
       propOpt.flatMap { prop => getPropClass(mirror, prop) }
     } catch {
       case NonFatal(t) => {
-        if (logger.isDebugEnabled) {
-          //use this form because of Scala 2.11 & 2.12 compile issue
-          logger.debug(s"Unable to get type info ${Option(cls.getName).getOrElse("null")}", t)
-        } else {
-          logger.info("Unable to get type info {}", Option(cls.getName).getOrElse("null"))
-        }
+        logReflectIssue(cls, t)
+        None
+      }
+      case error: NoClassDefFoundError => {
+        logReflectIssue(cls, error)
         None
       }
     }
@@ -93,6 +91,15 @@ private[reflect] object ErasureHelper {
     typeArg.typeArgs.headOption match {
       case Some(innerArg) => nestedTypeArg(innerArg)
       case _ => typeArg
+    }
+  }
+
+  private def logReflectIssue(cls: Class[_], t: Throwable) = {
+    if (logger.isDebugEnabled) {
+      //use this form because of Scala 2.11 & 2.12 compile issue
+      logger.debug(s"Unable to get type info ${Option(cls.getName).getOrElse("null")}", t)
+    } else {
+      logger.info(s"Unable to get type info ${Option(cls.getName).getOrElse("null")}: $t")
     }
   }
 }
