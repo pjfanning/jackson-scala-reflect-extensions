@@ -97,6 +97,14 @@ class ScalaReflectExtensionsExtrasTest extends AnyFlatSpec with Matchers with Be
     v1.values.get.flatten.sum shouldEqual w1.values.get.flatten.sum
   }
 
+  it should "deserialize DataExampleClass" in {
+    val mapper = newMapperWithScalaReflectExtensions
+    val w1 = DataExampleClass(CustomCollection(Seq(FeatureExample(Some(ExampleProperties(1, 1.23))))))
+    val t1 = mapper.writeValueAsString(w1)
+    val v1 = mapper.readValue[DataExampleClass](t1)
+    v1 shouldEqual w1
+  }
+
   private def newMapperWithScalaReflectExtensions: ObjectMapper with ScalaReflectExtensions = {
     JsonMapper.builder().addModule(DefaultScalaModule).build() :: ScalaReflectExtensions
   }
