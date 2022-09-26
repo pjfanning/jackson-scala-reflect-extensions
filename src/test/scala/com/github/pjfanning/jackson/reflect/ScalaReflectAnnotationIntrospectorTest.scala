@@ -65,12 +65,17 @@ class ScalaReflectAnnotationIntrospectorTest extends AnyFlatSpec with Matchers {
     val exampleType = mapper.constructType(classOf[DataExampleClass])
     val annotatedType = AnnotatedClassResolver.resolve(
       mapper.getDeserializationConfig, exampleType, mapper.getDeserializationConfig)
-    val subtypes = introspector.findSubtypes(annotatedType).asScala.toSeq.map(_.getType)
+    val subtypes = nullSafeSeq(introspector.findSubtypes(annotatedType)).map(_.getType)
     subtypes shouldBe empty
   }
 
   it should "return version" in {
     val introspector = new ScalaReflectAnnotationIntrospector
     introspector.version() shouldEqual JacksonModule.version
+  }
+
+  private def nullSafeSeq[T](list: java.util.List[T]): Seq[T] = Option(list) match {
+    case None => Seq.empty[T]
+    case Some(l) => l.asScala.toSeq
   }
 }
