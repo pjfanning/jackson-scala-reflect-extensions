@@ -10,7 +10,7 @@ ThisBuild / crossScalaVersions := Seq("2.11.12", "2.12.17", "2.13.9")
 
 val jacksonVersion = "2.14.0-rc1"
 
-resolvers ++= Resolver.sonatypeOssRepos("snapshots")
+//resolvers ++= Resolver.sonatypeOssRepos("snapshots")
 
 libraryDependencies ++= Seq(
   "org.scala-lang" % "scala-reflect" % scalaVersion.value,
