@@ -16,7 +16,7 @@ The Scala3 equivalent is [jackson-scala3-reflection-extensions](https://github.c
 and [ScalaObjectMapper](https://github.com/FasterXML/jackson-module-scala/blob/2.14/src/main/scala-2.%2B/com/fasterxml/jackson/module/scala/ScalaObjectMapper.scala).
 
 ```scala
-libraryDependencies += "com.github.pjfanning" %% "jackson-scala-reflect-extensions" % "2.14.0"
+libraryDependencies += "com.github.pjfanning" %% "jackson-scala-reflect-extensions" % "2.15.0"
 ```
 
 ```scala
