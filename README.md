@@ -6,6 +6,8 @@
 Jackson Scala 2 support that uses [scala-reflect](https://docs.scala-lang.org/overviews/reflection/overview.html)
 to get type info. The problem that this lib solves in described in this [FAQ entry](https://github.com/FasterXML/jackson-module-scala/wiki/FAQ#deserializing-optionint-seqint-and-other-primitive-challenges).
 
+The lib can also auto-discover subtypes if you are using Jackson's polymorphism support ([@JsonTypeInfo annotation](https://www.baeldung.com/jackson-inheritance#2-per-class-annotations)). You can omit the `@JsonSubTypes` if you dealing with sealed traits.
+
 This lib is designed to be used with [jackson-module-scala](https://github.com/FasterXML/jackson-module-scala). By default,
 jackson-module-scala uses Java reflection to work out the class structure.
 
