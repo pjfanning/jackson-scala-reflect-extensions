@@ -1,14 +1,14 @@
-import org.typelevel.sbt.gha.JavaSpec.Distribution.Zulu
+import sbtghactions.JavaSpec.Distribution.Zulu
 
 name := "jackson-scala-reflect-extensions"
 organization := "com.github.pjfanning"
 description := "Extension to jackson-module-scala that uses scala-reflect to get type info"
 
-ThisBuild / scalaVersion := "2.13.10"
+ThisBuild / scalaVersion := "2.13.12"
 
-ThisBuild / crossScalaVersions := Seq("2.11.12", "2.12.17", "2.13.10")
+ThisBuild / crossScalaVersions := Seq("2.11.12", "2.12.18", "2.13.12")
 
-val jacksonVersion = "2.15.1"
+val jacksonVersion = "2.16.0"
 
 //resolvers ++= Resolver.sonatypeOssRepos("snapshots")
 
@@ -16,9 +16,9 @@ libraryDependencies ++= Seq(
   "org.scala-lang" % "scala-reflect" % scalaVersion.value,
   "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion,
   "com.fasterxml.jackson.module" %% "jackson-module-scala" % jacksonVersion,
-  "org.slf4j" % "slf4j-api" % "2.0.7",
-  "org.scalatest" %% "scalatest" % "3.2.15" % Test,
-  "org.slf4j" % "slf4j-simple" % "2.0.7" % Test,
+  "org.slf4j" % "slf4j-api" % "2.0.9",
+  "org.scalatest" %% "scalatest" % "3.2.17" % Test,
+  "org.slf4j" % "slf4j-simple" % "2.0.9" % Test,
   "com.fasterxml.jackson.dataformat" % "jackson-dataformat-csv" % jacksonVersion % Test
 )
 
@@ -41,6 +41,7 @@ developers := List(
 Test / parallelExecution := false
 
 ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec(Zulu, "8"))
+ThisBuild / githubWorkflowTargetTags ++= Seq("v*")
 ThisBuild / githubWorkflowBuild := Seq(WorkflowStep.Sbt(List("test")))
 ThisBuild / githubWorkflowPublishTargetBranches := Seq(
   RefPredicate.Equals(Ref.Branch("main")),
