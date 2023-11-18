@@ -14,11 +14,11 @@ jackson-module-scala uses Java reflection to work out the class structure.
 The Scala3 equivalent is [jackson-scala3-reflection-extensions](https://github.com/pjfanning/jackson-scala3-reflection-extensions).
 
 `ScalaReflectExtensions` can be mixed into your ObjectMapper in as a similar way to jackson-module-scala's
-[ClassTagExtensions](https://github.com/FasterXML/jackson-module-scala/blob/2.14/src/main/scala/com/fasterxml/jackson/module/scala/ClassTagExtensions.scala)
-and [ScalaObjectMapper](https://github.com/FasterXML/jackson-module-scala/blob/2.14/src/main/scala-2.%2B/com/fasterxml/jackson/module/scala/ScalaObjectMapper.scala).
+[ClassTagExtensions](https://github.com/FasterXML/jackson-module-scala/blob/2.16/src/main/scala/com/fasterxml/jackson/module/scala/ClassTagExtensions.scala)
+and [ScalaObjectMapper](https://github.com/FasterXML/jackson-module-scala/blob/2.16/src/main/scala-2.%2B/com/fasterxml/jackson/module/scala/ScalaObjectMapper.scala).
 
 ```scala
-libraryDependencies += "com.github.pjfanning" %% "jackson-scala-reflect-extensions" % "2.15.0"
+libraryDependencies += "com.github.pjfanning" %% "jackson-scala-reflect-extensions" % "2.16.0"
 ```
 
 ```scala
