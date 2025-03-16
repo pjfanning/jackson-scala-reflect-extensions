@@ -37,3 +37,21 @@ mapper2.registerModule(DefaultScalaModule)
 
 val instance = mapper.readValue[MyClass](jsonText)
 ```
+
+If you just want the sealed trait support, you will need to register the `ScalaReflectAnnotationIntrospectorModule` module.
+```scala
+import com.fasterxml.jackson.databind.json.JsonMapper
+import com.fasterxml.jackson.module.scala.DefaultScalaModule
+import com.github.pjfanning.jackson.reflect.ScalaReflectAnnotationIntrospectorModule
+
+val mapperBuilder = JsonMapper.builder()
+  .addModule(DefaultScalaModule)
+  .addModule(ScalaReflectAnnotationIntrospectorModule)
+
+val mapper = mapperBuilder.build()
+
+// this should also work but Jackson is moving to supporting only creating mapper instances from a builder
+val mapper2 = new ObjectMapper
+mapper2.registerModule(DefaultScalaModule)
+mapper2.registerModule(ScalaReflectAnnotationIntrospectorModule)
+```
