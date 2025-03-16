@@ -38,7 +38,7 @@ mapper2.registerModule(DefaultScalaModule)
 val instance = mapper.readValue[MyClass](jsonText)
 ```
 
-If you just want the sealed trait support, you will need to register the `ScalaReflectAnnotationIntrospectorModule` module.
+If you want the sealed trait support, you will need to register the `ScalaReflectAnnotationIntrospectorModule` module.
 ```scala
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
