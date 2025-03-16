@@ -8,7 +8,7 @@ ThisBuild / scalaVersion := "2.13.12"
 
 ThisBuild / crossScalaVersions := Seq("2.11.12", "2.12.18", "2.13.12")
 
-val jacksonVersion = "2.16.0"
+val jacksonVersion = "2.18.3"
 
 //resolvers ++= Resolver.sonatypeOssRepos("snapshots")
 
@@ -16,9 +16,9 @@ libraryDependencies ++= Seq(
   "org.scala-lang" % "scala-reflect" % scalaVersion.value,
   "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion,
   "com.fasterxml.jackson.module" %% "jackson-module-scala" % jacksonVersion,
-  "org.slf4j" % "slf4j-api" % "2.0.9",
-  "org.scalatest" %% "scalatest" % "3.2.17" % Test,
-  "org.slf4j" % "slf4j-simple" % "2.0.9" % Test,
+  "org.slf4j" % "slf4j-api" % "2.0.17",
+  "org.scalatest" %% "scalatest" % "3.2.19" % Test,
+  "org.slf4j" % "slf4j-simple" % "2.0.17" % Test,
   "com.fasterxml.jackson.dataformat" % "jackson-dataformat-csv" % jacksonVersion % Test
 )
 
