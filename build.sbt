@@ -4,9 +4,9 @@ name := "jackson-scala-reflect-extensions"
 organization := "com.github.pjfanning"
 description := "Extension to jackson-module-scala that uses scala-reflect to get type info"
 
-ThisBuild / scalaVersion := "2.13.12"
+ThisBuild / scalaVersion := "2.13.16"
 
-ThisBuild / crossScalaVersions := Seq("2.11.12", "2.12.18", "2.13.12")
+ThisBuild / crossScalaVersions := Seq("2.11.12", "2.12.20", "2.13.16")
 
 val jacksonVersion = "2.18.3"
 
