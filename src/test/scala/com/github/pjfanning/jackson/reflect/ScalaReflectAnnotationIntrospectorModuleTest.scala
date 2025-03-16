@@ -2,7 +2,6 @@ package com.github.pjfanning.jackson.reflect
 
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import com.fasterxml.jackson.module.scala.deser.ScalaObjectDeserializerModule
 import com.github.pjfanning.jackson.reflect.annotated.{Blue, Car, Cat, PetOwner, Red}
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
@@ -18,9 +17,9 @@ class ScalaReflectAnnotationIntrospectorModuleTest extends AnyFlatSpec with Matc
   }
 
   it should "deserialize Car with annotated.Color" in {
+    // test no longer needs ScalaObjectDeserializerModule as it is now included in DefaultScalaModule since Jackson 2.16.0
     val mapper = JsonMapper.builder()
       .addModule(DefaultScalaModule)
-      .addModule(ScalaObjectDeserializerModule) //this non-default module prevents duplicate scala objects being created
       .addModule(ScalaReflectAnnotationIntrospectorModule)
       .build()
     val car = Car("Samand", Red)
@@ -31,9 +30,9 @@ class ScalaReflectAnnotationIntrospectorModuleTest extends AnyFlatSpec with Matc
   }
 
   it should "deserialize Nested.Car with Nested.Color" in {
+    // test no longer needs ScalaObjectDeserializerModule as it is now included in DefaultScalaModule since Jackson 2.16.0
     val mapper = JsonMapper.builder()
       .addModule(DefaultScalaModule)
-      .addModule(ScalaObjectDeserializerModule) //this non-default module prevents duplicate scala objects being created
       .addModule(ScalaReflectAnnotationIntrospectorModule)
       .build()
     val car = Nested.Car("Samand", Nested.Red)
@@ -44,9 +43,9 @@ class ScalaReflectAnnotationIntrospectorModuleTest extends AnyFlatSpec with Matc
   }
 
   it should "deserialize PetOwner with annotated.Animal" in {
+    // test no longer needs ScalaObjectDeserializerModule as it is now included in DefaultScalaModule since Jackson 2.16.0
     val mapper = JsonMapper.builder()
       .addModule(DefaultScalaModule)
-      .addModule(ScalaObjectDeserializerModule) //this non-default module prevents duplicate scala objects being created
       .addModule(ScalaReflectAnnotationIntrospectorModule)
       .build()
     val petOwner = PetOwner("Seoirse", new Cat("Trixie"))

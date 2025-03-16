@@ -59,6 +59,18 @@ class ScalaReflectAnnotationIntrospectorTest extends AnyFlatSpec with Matchers {
     subtypes(1) shouldEqual classOf[annotated.Dog]
   }
 
+  it should "find sub types for annotatedclass.Animal" in {
+    val introspector = new ScalaReflectAnnotationIntrospector
+    val mapper = JsonMapper.builder().build()
+    val animalType = mapper.constructType(classOf[annotatedclass.Animal])
+    val annotatedAnimalType = AnnotatedClassResolver.resolve(
+      mapper.getDeserializationConfig, animalType, mapper.getDeserializationConfig)
+    val subtypes = introspector.findSubtypes(annotatedAnimalType).asScala.toSeq.map(_.getType)
+    subtypes should have size 2
+    subtypes(0) shouldEqual classOf[annotatedclass.Cat]
+    subtypes(1) shouldEqual classOf[annotatedclass.Dog]
+  }
+
   it should "find sub types for DataExampleClass" in {
     val introspector = new ScalaReflectAnnotationIntrospector
     val mapper = JsonMapper.builder().build()
