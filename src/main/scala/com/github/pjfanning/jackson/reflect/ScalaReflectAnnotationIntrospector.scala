@@ -1,7 +1,7 @@
 package com.github.pjfanning.jackson.reflect
 
 import com.fasterxml.jackson.core.Version
-import com.fasterxml.jackson.databind.introspect.{Annotated, JacksonAnnotationIntrospector}
+import com.fasterxml.jackson.databind.introspect.{Annotated, AnnotatedClass, JacksonAnnotationIntrospector}
 import com.fasterxml.jackson.databind.jsontype.NamedType
 import org.slf4j.LoggerFactory
 
@@ -15,33 +15,34 @@ class ScalaReflectAnnotationIntrospector extends JacksonAnnotationIntrospector {
 
   override def version(): Version = JacksonModule.version
 
-  override def findSubtypes(a: Annotated): util.List[NamedType] = {
-    try {
-      val mirror = ru.runtimeMirror(Thread.currentThread().getContextClassLoader)
-      val classSymbol = mirror.classSymbol(a.getRawType)
-      lazy val symbol = companionOrSelf(classSymbol)
-      if (classSymbol.isJava) {
-        None.orNull
-      } else if (symbol.isClass) {
-        val classes = symbol.asClass.knownDirectSubclasses
-          .toSeq
-          .sortBy(_.info.toString)
-          .flatMap(s => if (s.isClass) Some(s.asClass) else None)
-          .map(c => mirror.runtimeClass(c))
-        classes.map(c => new NamedType(c)).asJava
-      } else {
-        None.orNull
+  override def findSubtypes(ann: Annotated): util.List[NamedType] = ann match {
+    case ac: AnnotatedClass =>
+      try {
+        val mirror = ru.runtimeMirror(Thread.currentThread().getContextClassLoader)
+        val classSymbol = mirror.classSymbol(ac.getRawType)
+        lazy val symbol = companionOrSelf(classSymbol)
+        if (classSymbol.isJava) {
+          None.orNull
+        } else if (symbol.isClass) {
+          val classes = symbol.asClass.knownDirectSubclasses
+            .toSeq
+            .sortBy(_.info.toString)
+            .flatMap(s => if (s.isClass) Some(s.asClass) else None)
+            .map(c => mirror.runtimeClass(c))
+          classes.map(c => new NamedType(c)).asJava
+        } else {
+          None.orNull
+        }
+      } catch {
+        case NonFatal(t) => {
+          logger.warn(s"Failed to findSubtypes in ${ac.getRawType}: $t")
+          None.orNull
+        }
+        case error: NoClassDefFoundError => {
+          logger.warn(s"Failed to findSubtypes in ${ac.getRawType}: $error")
+          None.orNull
+        }
       }
-    } catch {
-      case NonFatal(t) => {
-        logger.warn(s"Failed to findSubtypes in ${a.getRawType}: $t")
-        None.orNull
-      }
-      case error: NoClassDefFoundError => {
-        logger.warn(s"Failed to findSubtypes in ${a.getRawType}: $error")
-        None.orNull
-      }
-    }
   }
 
   private def companionOrSelf(sym: ru.Symbol): ru.Symbol = {
