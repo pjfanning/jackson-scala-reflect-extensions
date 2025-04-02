@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory
 
 import java.util
 import scala.collection.JavaConverters._
+import scala.reflect.runtime.universe.ClassSymbol
 import scala.reflect.runtime.{universe => ru}
 import scala.util.control.NonFatal
 
@@ -24,10 +25,9 @@ class ScalaReflectAnnotationIntrospector extends JacksonAnnotationIntrospector {
         if (classSymbol.isJava) {
           None.orNull
         } else if (symbol.isClass) {
-          val classes = symbol.asClass.knownDirectSubclasses
+          val classes = findSubTypesFromSymbol(symbol.asClass)
             .toSeq
             .sortBy(_.info.toString)
-            .flatMap(s => if (s.isClass) Some(s.asClass) else None)
             .map(c => mirror.runtimeClass(c))
           classes.map(c => new NamedType(c)).asJava
         } else {
@@ -47,6 +47,13 @@ class ScalaReflectAnnotationIntrospector extends JacksonAnnotationIntrospector {
 
   private def companionOrSelf(sym: ru.Symbol): ru.Symbol = {
     if (sym.companion == ru.NoSymbol) sym else sym.companion
+  }
+
+  private def findSubTypesFromSymbol(cs: ClassSymbol): Set[ClassSymbol] = {
+    val classes = cs.knownDirectSubclasses
+      .flatMap(s => if (s.isClass) Some(s.asClass) else None)
+    val deepClasses = classes.flatMap(findSubTypesFromSymbol)
+    classes ++ deepClasses
   }
 
 }
