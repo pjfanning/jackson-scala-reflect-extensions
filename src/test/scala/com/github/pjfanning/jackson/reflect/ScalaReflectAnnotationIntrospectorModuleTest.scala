@@ -3,6 +3,7 @@ package com.github.pjfanning.jackson.reflect
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.github.pjfanning.jackson.reflect.annotated.{Blue, Car, Cat, PetOwner, Red}
+import com.github.pjfanning.jackson.reflect.family.{Tiger, TrackedAnimal}
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
@@ -54,6 +55,19 @@ class ScalaReflectAnnotationIntrospectorModuleTest extends AnyFlatSpec with Matc
     petOwner2.owner shouldEqual petOwner.owner
     petOwner2.pet.animalType shouldEqual petOwner.pet.animalType
     petOwner2.pet.name shouldEqual petOwner.pet.name
+  }
+
+  it should "deserialize TrackedAnimal with family.Animal" in {
+    val mapper = JsonMapper.builder()
+      .addModule(DefaultScalaModule)
+      .addModule(ScalaReflectAnnotationIntrospectorModule)
+      .build()
+    val tracked = TrackedAnimal("Tigger", new Tiger())
+    val json = mapper.writeValueAsString(tracked)
+    val tracked2 = mapper.readValue(json, classOf[TrackedAnimal])
+    tracked2.name shouldEqual tracked.name
+    tracked2.animalType.species shouldEqual tracked.animalType.species
+    tracked2.animalType.familyType shouldEqual tracked.animalType.familyType
   }
 
   it should "return version" in {
