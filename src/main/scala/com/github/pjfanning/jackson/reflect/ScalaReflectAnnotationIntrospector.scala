@@ -31,13 +31,7 @@ class ScalaReflectAnnotationIntrospector extends JacksonAnnotationIntrospector {
             if (classSymbol.isJava) {
               None.orNull
             } else if (symbol.isClass) {
-              val clz = symbol.asClass
-              // It is possible that other classes might have subclasses
-              // but the risk is that someone wants to serialize the base class
-              // without including type information -- at the moment, users will still
-              // need to add @JsonTypeInfo to the base class
-              val isLikelyBaseClass = clz.isAbstract || clz.isTrait || clz.isSealed
-              if (isLikelyBaseClass && clz.knownDirectSubclasses.nonEmpty) {
+              if (symbol.asClass.knownDirectSubclasses.nonEmpty) {
                 JsonTypeInfo.Value.construct(JsonTypeInfo.Id.NAME, JsonTypeInfo.As.PROPERTY,
                   None.orNull, None.orNull, true, None.orNull)
               } else {
@@ -53,6 +47,39 @@ class ScalaReflectAnnotationIntrospector extends JacksonAnnotationIntrospector {
             }
             case error: NoClassDefFoundError => {
               logger.warn(s"Failed to findPolymorphicTypeInfo in ${ac.getRawType}: $error")
+              None.orNull
+            }
+          }
+        } else {
+          JsonTypeInfo.Value.from(t)
+        }
+      case am: AnnotatedMember =>
+        val t = _findAnnotation(am, classOf[JsonTypeInfo])
+        if (t == null) {
+          try {
+            val mirror = ru.runtimeMirror(Thread.currentThread().getContextClassLoader)
+            val methodSymbol = mirror.reflect(am.getAnnotated).symbol
+            val classSymbol = methodSymbol.owner.asClass
+            lazy val symbol = companionOrSelf(classSymbol)
+            if (classSymbol.isJava) {
+              None.orNull
+            } else if (symbol.isClass) {
+              if (symbol.asClass.knownDirectSubclasses.nonEmpty) {
+                JsonTypeInfo.Value.construct(JsonTypeInfo.Id.NAME, JsonTypeInfo.As.PROPERTY,
+                  None.orNull, None.orNull, true, None.orNull)
+              } else {
+                None.orNull
+              }
+            } else {
+              None.orNull
+            }
+          } catch {
+            case NonFatal(t) => {
+              logger.warn(s"Failed to findPolymorphicTypeInfo in $am: $t")
+              None.orNull
+            }
+            case error: NoClassDefFoundError => {
+              logger.warn(s"Failed to findPolymorphicTypeInfo in $am: $error")
               None.orNull
             }
           }
