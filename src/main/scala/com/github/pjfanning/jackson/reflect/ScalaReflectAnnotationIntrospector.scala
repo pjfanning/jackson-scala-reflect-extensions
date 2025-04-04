@@ -1,12 +1,13 @@
 package com.github.pjfanning.jackson.reflect
 
 import com.fasterxml.jackson.core.Version
-import com.fasterxml.jackson.databind.introspect.{Annotated, AnnotatedClass, JacksonAnnotationIntrospector}
+import com.fasterxml.jackson.databind.introspect.{Annotated, AnnotatedClass, AnnotatedMethod, JacksonAnnotationIntrospector}
 import com.fasterxml.jackson.databind.jsontype.NamedType
 import org.slf4j.LoggerFactory
 
 import java.util
 import scala.collection.JavaConverters._
+import scala.reflect.runtime.universe.ClassSymbol
 import scala.reflect.runtime.{universe => ru}
 import scala.util.control.NonFatal
 
@@ -19,20 +20,7 @@ class ScalaReflectAnnotationIntrospector extends JacksonAnnotationIntrospector {
     case ac: AnnotatedClass =>
       try {
         val mirror = ru.runtimeMirror(Thread.currentThread().getContextClassLoader)
-        val classSymbol = mirror.classSymbol(ac.getRawType)
-        lazy val symbol = companionOrSelf(classSymbol)
-        if (classSymbol.isJava) {
-          None.orNull
-        } else if (symbol.isClass) {
-          val classes = symbol.asClass.knownDirectSubclasses
-            .toSeq
-            .sortBy(_.info.toString)
-            .flatMap(s => if (s.isClass) Some(s.asClass) else None)
-            .map(c => mirror.runtimeClass(c))
-          classes.map(c => new NamedType(c)).asJava
-        } else {
-          None.orNull
-        }
+        getNamedTypes(mirror.classSymbol(ac.getRawType), mirror)
       } catch {
         case NonFatal(t) => {
           logger.warn(s"Failed to findSubtypes in ${ac.getRawType}: $t")
@@ -43,6 +31,40 @@ class ScalaReflectAnnotationIntrospector extends JacksonAnnotationIntrospector {
           None.orNull
         }
       }
+    case am: AnnotatedMethod =>
+      try {
+        val mirror = ru.runtimeMirror(Thread.currentThread().getContextClassLoader)
+        val methodSymbol = mirror.reflect(am.getAnnotated).symbol
+        getNamedTypes(methodSymbol.owner.asClass, mirror)
+      } catch {
+        case NonFatal(t) => {
+          logger.warn(s"Failed to findSubtypes in ${am.getAnnotated}: $t")
+          None.orNull
+        }
+        case error: NoClassDefFoundError => {
+          logger.warn(s"Failed to findSubtypes in ${am.getAnnotated}: $error")
+          None.orNull
+        }
+      }
+    case _ => None.orNull
+  }
+
+  private def getNamedTypes(classSymbol: ClassSymbol, mirror: ru.Mirror): util.List[NamedType] = {
+    if (classSymbol.isJava) {
+      None.orNull
+    } else {
+      val symbol = companionOrSelf(classSymbol)
+      if (symbol.isClass) {
+        val classes = symbol.asClass.knownDirectSubclasses
+          .toSeq
+          .sortBy(_.info.toString)
+          .flatMap(s => if (s.isClass) Some(s.asClass) else None)
+          .map(c => mirror.runtimeClass(c))
+        classes.map(c => new NamedType(c)).asJava
+      } else {
+        None.orNull
+      }
+    }
   }
 
   private def companionOrSelf(sym: ru.Symbol): ru.Symbol = {
