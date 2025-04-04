@@ -31,21 +31,6 @@ class ScalaReflectAnnotationIntrospector extends JacksonAnnotationIntrospector {
           None.orNull
         }
       }
-    case am: AnnotatedMethod =>
-      try {
-        val mirror = ru.runtimeMirror(Thread.currentThread().getContextClassLoader)
-        val methodSymbol = mirror.reflect(am.getAnnotated).symbol
-        getNamedTypes(methodSymbol.owner.asClass, mirror)
-      } catch {
-        case NonFatal(t) => {
-          logger.warn(s"Failed to findSubtypes in ${am.getAnnotated}: $t")
-          None.orNull
-        }
-        case error: NoClassDefFoundError => {
-          logger.warn(s"Failed to findSubtypes in ${am.getAnnotated}: $error")
-          None.orNull
-        }
-      }
     case _ => None.orNull
   }
 
