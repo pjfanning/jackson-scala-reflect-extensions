@@ -1,7 +1,7 @@
 package com.github.pjfanning.jackson.reflect
 
 import com.fasterxml.jackson.core.Version
-import com.fasterxml.jackson.databind.introspect.{Annotated, AnnotatedClass, AnnotatedMethod, JacksonAnnotationIntrospector}
+import com.fasterxml.jackson.databind.introspect.{Annotated, AnnotatedClass, JacksonAnnotationIntrospector}
 import com.fasterxml.jackson.databind.jsontype.NamedType
 import org.slf4j.LoggerFactory
 
