@@ -14,20 +14,13 @@ import scala.reflect.runtime.universe.ClassSymbol
 import scala.reflect.runtime.{universe => ru}
 import scala.util.control.NonFatal
 
-class ScalaReflectAnnotationIntrospector extends JacksonAnnotationIntrospector {
+class ScalaReflectAnnotationIntrospector(supportInferenceOfJsonTypeInfo: Boolean = true) extends JacksonAnnotationIntrospector {
   private val logger = LoggerFactory.getLogger(classOf[ScalaReflectAnnotationIntrospector])
 
   override def version(): Version = JacksonModule.version
 
-  /**
-   * Whether this introspector supports type infers for polymorphic JSONTypeInfo
-   * for sealed traits/classes.
-   * @since 2.18
-   */
-  def supportInferenceOfJsonTypeInfo(): Boolean = true
-
   override def findPolymorphicTypeInfo(config: MapperConfig[_], ann: Annotated): JsonTypeInfo.Value = {
-    if (supportInferenceOfJsonTypeInfo()) {
+    if (supportInferenceOfJsonTypeInfo) {
       ann match {
         case ac: AnnotatedClass if isScala(ac) =>
           val t = _findAnnotation(ac, classOf[JsonTypeInfo])

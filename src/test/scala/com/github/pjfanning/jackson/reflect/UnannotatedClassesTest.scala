@@ -1,5 +1,6 @@
 package com.github.pjfanning.jackson.reflect
 
+import com.fasterxml.jackson.databind.exc.InvalidDefinitionException
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.github.pjfanning.jackson.reflect.unannotated._
@@ -27,6 +28,22 @@ class UnannotatedClassesTest extends AnyFlatSpec with Matchers {
     val car2 = mapper.readValue(json, classOf[Car])
     car2.color shouldEqual car.color
     car2.make shouldEqual car.make
+  }
+
+  it should "fail to deserialize Car with unannotated.Color (inference disabled)" in {
+    val introspectorModule = new ScalaReflectAnnotationIntrospectorModule {
+      override def supportInferenceOfJsonTypeInfo(): Boolean = false
+    }
+    val mapper = JsonMapper.builder()
+      .addModule(DefaultScalaModule)
+      .addModule(introspectorModule)
+      .build()
+    val car = Car("Samand", Red)
+    val json = mapper.writeValueAsString(car)
+    // we expect an InvalidDefinitionException because the unannotated.Color has no JsonTypeInfo annotation
+    intercept[InvalidDefinitionException] {
+      mapper.readValue(json, classOf[Car])
+    }
   }
 
   it should "serialize unannotated.Country" in {
