@@ -1,8 +1,11 @@
 package com.github.pjfanning.jackson.reflect
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.core.Version
-import com.fasterxml.jackson.databind.introspect.{Annotated, AnnotatedClass, JacksonAnnotationIntrospector}
+import com.fasterxml.jackson.databind.cfg.MapperConfig
+import com.fasterxml.jackson.databind.introspect.{Annotated, AnnotatedClass, AnnotatedMember, JacksonAnnotationIntrospector}
 import com.fasterxml.jackson.databind.jsontype.NamedType
+import com.fasterxml.jackson.module.scala.util.ClassW
 import org.slf4j.LoggerFactory
 
 import java.util
@@ -11,13 +14,88 @@ import scala.reflect.runtime.universe.ClassSymbol
 import scala.reflect.runtime.{universe => ru}
 import scala.util.control.NonFatal
 
-class ScalaReflectAnnotationIntrospector extends JacksonAnnotationIntrospector {
+class ScalaReflectAnnotationIntrospector(supportInferenceOfJsonTypeInfo: Boolean = true) extends JacksonAnnotationIntrospector {
   private val logger = LoggerFactory.getLogger(classOf[ScalaReflectAnnotationIntrospector])
 
   override def version(): Version = JacksonModule.version
 
+  override def findPolymorphicTypeInfo(config: MapperConfig[_], ann: Annotated): JsonTypeInfo.Value = {
+    if (supportInferenceOfJsonTypeInfo) {
+      ann match {
+        case ac: AnnotatedClass if isScala(ac) =>
+          val t = _findAnnotation(ac, classOf[JsonTypeInfo])
+          if (t == null) {
+            try {
+              val mirror = ru.runtimeMirror(Thread.currentThread().getContextClassLoader)
+              val classSymbol = mirror.classSymbol(ac.getRawType)
+              lazy val symbol = companionOrSelf(classSymbol)
+              if (classSymbol.isJava) {
+                None.orNull
+              } else if (symbol.isClass) {
+                if (symbol.asClass.knownDirectSubclasses.nonEmpty) {
+                  JsonTypeInfo.Value.construct(JsonTypeInfo.Id.NAME, JsonTypeInfo.As.PROPERTY,
+                    None.orNull, None.orNull, true, None.orNull)
+                } else {
+                  None.orNull
+                }
+              } else {
+                None.orNull
+              }
+            } catch {
+              case NonFatal(t) => {
+                logger.warn(s"Failed to findPolymorphicTypeInfo in ${ac.getRawType}: $t")
+                None.orNull
+              }
+              case error: NoClassDefFoundError => {
+                logger.warn(s"Failed to findPolymorphicTypeInfo in ${ac.getRawType}: $error")
+                None.orNull
+              }
+            }
+          } else {
+            JsonTypeInfo.Value.from(t)
+          }
+        case am: AnnotatedMember =>
+          val t = _findAnnotation(am, classOf[JsonTypeInfo])
+          if (t == null) {
+            try {
+              val mirror = ru.runtimeMirror(Thread.currentThread().getContextClassLoader)
+              val methodSymbol = mirror.reflect(am.getAnnotated).symbol
+              val classSymbol = methodSymbol.owner.asClass
+              lazy val symbol = companionOrSelf(classSymbol)
+              if (classSymbol.isJava) {
+                None.orNull
+              } else if (symbol.isClass) {
+                if (symbol.asClass.knownDirectSubclasses.nonEmpty) {
+                  JsonTypeInfo.Value.construct(JsonTypeInfo.Id.NAME, JsonTypeInfo.As.PROPERTY,
+                    None.orNull, None.orNull, true, None.orNull)
+                } else {
+                  None.orNull
+                }
+              } else {
+                None.orNull
+              }
+            } catch {
+              case NonFatal(t) => {
+                logger.warn(s"Failed to findPolymorphicTypeInfo in $am: $t")
+                None.orNull
+              }
+              case error: NoClassDefFoundError => {
+                logger.warn(s"Failed to findPolymorphicTypeInfo in $am: $error")
+                None.orNull
+              }
+            }
+          } else {
+            JsonTypeInfo.Value.from(t)
+          }
+        case _ => None.orNull
+      }
+    } else {
+      None.orNull
+    }
+  }
+
   override def findSubtypes(ann: Annotated): util.List[NamedType] = ann match {
-    case ac: AnnotatedClass =>
+    case ac: AnnotatedClass if isScala(ac) =>
       try {
         val mirror = ru.runtimeMirror(Thread.currentThread().getContextClassLoader)
         getNamedTypes(mirror.classSymbol(ac.getRawType), mirror)
@@ -54,6 +132,11 @@ class ScalaReflectAnnotationIntrospector extends JacksonAnnotationIntrospector {
 
   private def companionOrSelf(sym: ru.Symbol): ru.Symbol = {
     if (sym.companion == ru.NoSymbol) sym else sym.companion
+  }
+
+  private def isScala(ann: Annotated): Boolean = {
+    val cw = ClassW(ann.getRawType)
+    cw.extendsScalaClass(false) || cw.hasSignature
   }
 
 }
